@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sign_flow/ad_helper.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../services/pdf_service.dart';
 
@@ -37,11 +39,33 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
   List<Size>? _allPageSizes;
   GlobalKey _pdfViewerKey = GlobalKey();
 
+  BannerAd? _bannerAd;
+
   @override
   void initState() {
     super.initState();
+    _loadBannerAd();
     _calculateAspectRatio();
     _loadPageSizes();
+  }
+
+  void _loadBannerAd() {
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannerAd = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          print("Failed to load a banner ad: ${error.message}");
+          ad.dispose();
+        },
+      ),
+    ).load();
   }
 
   void _calculateAspectRatio() async {
@@ -179,6 +203,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
 
@@ -333,6 +358,19 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                 ),
               ),
             ),
+          _bannerAd != null
+              ? Positioned(
+                  bottom: 0,
+
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: width,
+                    color: Colors.white,
+                    height: _bannerAd!.size.height.toDouble(),
+                    child: AdWidget(ad: _bannerAd!),
+                  ),
+                )
+              : SizedBox.shrink(),
         ],
       ),
     );
