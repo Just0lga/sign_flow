@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/pdf_viewer_screen.dart';
+import 'screens/homepage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const PdfViewerScreen(),
+      home: HomeScreen(),
     );
   }
 }
