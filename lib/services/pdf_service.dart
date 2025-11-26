@@ -7,11 +7,14 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 class PdfService {
   /// Adds a signature image to the specified page and position in the PDF.
   /// Returns a new [File] containing the signed PDF.
+  /// Adds a signature image to the specified page and position in the PDF.
+  /// Returns a new [File] containing the signed PDF.
   Future<File> addSignatureToPdf(
     File pdfFile,
     Uint8List signatureData,
     int pageNumber,
     Offset position,
+    Size signatureSize,
   ) async {
     // Load the existing PDF document.
     final PdfDocument document =
@@ -27,12 +30,9 @@ class PdfService {
     final PdfBitmap signatureImage = PdfBitmap(signatureData);
 
     // Draw the signature on the page.
-    // We might need to adjust the size. For now, let's use a default size or the image's size.
-    // Let's say we want the signature to be reasonable size, e.g., 100x50, or preserve aspect ratio.
-    // For simplicity, let's draw it at the tapped position with a fixed width, preserving aspect ratio.
-    const double signatureWidth = 100.0;
-    final double aspectRatio = signatureImage.width / signatureImage.height;
-    final double signatureHeight = signatureWidth / aspectRatio;
+    // Use the passed signatureSize.
+    final double signatureWidth = signatureSize.width;
+    final double signatureHeight = signatureSize.height;
 
     // Adjust position to center the signature on the tap point
     final double x = position.dx - (signatureWidth / 2);
@@ -54,5 +54,27 @@ class PdfService {
     await file.writeAsBytes(bytes, flush: true);
 
     return file;
+  }
+  /// Gets the size of a specific page in the PDF.
+  Future<Size> getPageSize(File pdfFile, int pageNumber) async {
+    final PdfDocument document =
+        PdfDocument(inputBytes: await pdfFile.readAsBytes());
+    final PdfPage page = document.pages[pageNumber];
+    final Size size = page.size;
+    document.dispose();
+    return size;
+  }
+
+  /// Gets the size of all pages in the PDF.
+  Future<List<Size>> getAllPageSizes(File pdfFile) async {
+    final PdfDocument document =
+        PdfDocument(inputBytes: await pdfFile.readAsBytes());
+    int count = document.pages.count;
+    List<Size> sizes = [];
+    for (int i = 0; i < count; i++) {
+      sizes.add(document.pages[i].size);
+    }
+    document.dispose();
+    return sizes;
   }
 }

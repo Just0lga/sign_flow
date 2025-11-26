@@ -9,6 +9,8 @@ import '../services/file_picker_service.dart';
 import '../services/pdf_service.dart';
 import '../widgets/signature_pad_widget.dart';
 import 'signature_placement_screen.dart';
+import 'terms_of_service_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class PdfViewerScreen extends StatefulWidget {
   const PdfViewerScreen({Key? key}) : super(key: key);
@@ -45,7 +47,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     );
 
     if (signatureBytes != null && _currentFile != null && mounted) {
-      final File? signedFile = await Navigator.push(
+      final result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => SignaturePlacementScreen(
@@ -56,15 +58,18 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         ),
       );
 
-      if (signedFile != null) {
+      if (result != null && result is Map) {
+        final File signedFile = result['file'];
+        final int targetPage = result['page'];
+
         setState(() {
           _currentFile = signedFile;
-          _jumpToPageOnLoad = currentPage; // Restore page number
+          _jumpToPageOnLoad = targetPage; // Jump to the page where signature was placed
         });
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signature added successfully!')),
+            const SnackBar(content: Text('İmza başarıyla eklendi!')),
           );
         }
       }
@@ -75,7 +80,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     if (_currentFile != null) {
       await Share.shareXFiles([
         XFile(_currentFile!.path),
-      ], text: 'Here is my signed document.');
+      ], text: 'İşte imzalı belgem.');
     }
   }
 
@@ -84,9 +89,21 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
     try {
       if (Platform.isAndroid) {
+        // Try to get storage permission
         var status = await Permission.storage.status;
         if (!status.isGranted) {
           status = await Permission.storage.request();
+        }
+
+        // If storage is denied (likely Android 13+), try manageExternalStorage
+        if (!status.isGranted) {
+          var manageStatus = await Permission.manageExternalStorage.status;
+          if (!manageStatus.isGranted) {
+            manageStatus = await Permission.manageExternalStorage.request();
+          }
+          if (manageStatus.isGranted) {
+            status = PermissionStatus.granted;
+          }
         }
 
         if (status.isGranted) {
@@ -103,14 +120,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Saved to Downloads: $fileName')),
+              SnackBar(content: Text('İndirilenlere kaydedildi: $fileName')),
             );
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Storage permission denied')),
+              const SnackBar(
+                content: Text(
+                  'Depolama izni reddedildi. Lütfen ayarlardan "Tüm dosyalara erişim" iznini verin.',
+                ),
+              ),
             );
+            // Optionally open settings
+            // openAppSettings();
           }
         }
       } else {
@@ -118,7 +141,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         _shareFile();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Use "Save to Files" to download.')),
+            const SnackBar(content: Text('İndirmek için "Dosyalara Kaydet"i kullanın.')),
           );
         }
       }
@@ -126,7 +149,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error downloading: $e')));
+        ).showSnackBar(SnackBar(content: Text('İndirme hatası: $e')));
       }
     }
   }
@@ -150,17 +173,17 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             IconButton(
               icon: const Icon(Icons.share),
               onPressed: _shareFile,
-              tooltip: 'Share',
+              tooltip: 'Paylaş',
             ),
             IconButton(
               icon: const Icon(Icons.download),
               onPressed: _downloadFile,
-              tooltip: 'Download',
+              tooltip: 'İndir',
             ),
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: _openSignaturePad,
-              tooltip: 'Add Signature',
+              tooltip: 'İmza Ekle',
             ),
           ],
         ],
@@ -189,7 +212,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                     ),
                   ),
                   Text(
-                    'Sign your documents easily',
+                    'Belgelerinizi kolayca imzalayın',
                     style: GoogleFonts.poppins(
                       color: const Color.fromARGB(255, 130, 130, 130),
                       fontWeight: FontWeight.w300,
@@ -223,7 +246,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
                       alignment: Alignment.center,
                       child: Text(
-                        'Pick PDF File',
+                        'PDF Dosyası Seç',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.w400,
@@ -234,7 +257,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                   ),
                   Expanded(child: SizedBox()),
                   Text(
-                    "By pressing on 'Pick PDF File' you agree",
+                    "'PDF Dosyası Seç' butonuna basarak",
                     style: GoogleFonts.urbanist(
                       fontSize: 12,
                       color: const Color.fromARGB(255, 130, 130, 130),
@@ -244,35 +267,55 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "to our ",
+                        "kabul etmiş olursunuz: ",
                         style: GoogleFonts.urbanist(
                           fontSize: 12,
                           color: const Color.fromARGB(255, 130, 130, 130),
                         ),
                       ),
-                      Text(
-                        "Terms of Service",
-                        style: GoogleFonts.urbanist(
-                          fontSize: 12,
-                          color: Colors.white,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TermsOfServiceScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Hizmet Şartları",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 12,
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white,
+                          ),
                         ),
                       ),
                       Text(
-                        " and ",
+                        " ve ",
                         style: GoogleFonts.urbanist(
                           fontSize: 12,
                           color: const Color.fromARGB(255, 130, 130, 130),
                         ),
                       ),
-                      Text(
-                        "Privacy Policy",
-                        style: GoogleFonts.urbanist(
-                          fontSize: 12,
-                          color: Colors.white,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PrivacyPolicyScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Gizlilik Politikası",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 12,
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white,
+                          ),
                         ),
                       ),
                     ],

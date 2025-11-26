@@ -46,7 +46,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
       child: Column(
         children: [
           Text(
-            'Sign Below',
+            'Aşağıyı İmzalayın',
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Clear',
+                      'Temizle',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
@@ -122,7 +122,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Save Signature',
+                      'İmzayı Kaydet',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
