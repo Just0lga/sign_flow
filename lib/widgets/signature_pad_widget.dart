@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class SignaturePadWidget extends StatefulWidget {
-  final Function(Uint8List) onSigned;
-
-  const SignaturePadWidget({Key? key, required this.onSigned}) : super(key: key);
+  const SignaturePadWidget({Key? key}) : super(key: key);
 
   @override
   _SignaturePadWidgetState createState() => _SignaturePadWidgetState();
@@ -20,39 +19,51 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
   }
 
   Future<void> _saveSignature() async {
-    final ui.Image image =
-        await _signaturePadKey.currentState!.toImage(pixelRatio: 3.0);
-    final ByteData? byteData =
-        await image.toByteData(format: ui.ImageByteFormat.png);
+    final ui.Image image = await _signaturePadKey.currentState!.toImage(
+      pixelRatio: 3.0,
+    );
+    final ByteData? byteData = await image.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
 
     if (byteData != null) {
       final Uint8List pngBytes = byteData.buffer.asUint8List();
-      widget.onSigned(pngBytes);
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop(pngBytes);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
     return Container(
+      color: Colors.black,
       height: 400,
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Sign Below',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: SfSignaturePad(
                 key: _signaturePadKey,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.transparent,
                 strokeColor: Colors.black,
                 minimumStrokeWidth: 2.0,
                 maximumStrokeWidth: 4.0,
@@ -63,13 +74,62 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextButton(
-                onPressed: _clearSignature,
-                child: const Text('Clear'),
+              Expanded(
+                child: GestureDetector(
+                  onTap: _clearSignature,
+                  child: Container(
+                    height: width * 0.12,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 13, 20, 100),
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Clear',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              ElevatedButton(
-                onPressed: _saveSignature,
-                child: const Text('Save Signature'),
+              SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: _saveSignature,
+                  child: Container(
+                    height: width * 0.12,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 13, 20, 100),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(
+                            255,
+                            13,
+                            20,
+                            100,
+                          ).withOpacity(0.4),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Save Signature',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
