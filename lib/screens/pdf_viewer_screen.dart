@@ -1,13 +1,16 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:sign_flow/ad_helper.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../services/file_picker_service.dart';
 import '../services/pdf_service.dart';
 import '../widgets/signature_pad_widget.dart';
+
 import 'signature_placement_screen.dart';
 import 'terms_of_service_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -26,6 +29,29 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
   File? _currentFile;
   int? _jumpToPageOnLoad;
+  BannerAd? _bannerAd;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannerAd = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          print("Failed to load a banner ad: ${error.message}");
+          ad.dispose();
+        },
+      ),
+    ).load();
+  }
 
   void _pickFile() async {
     final File? file = await _filePickerService.pickPdfFile();
@@ -64,7 +90,8 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
         setState(() {
           _currentFile = signedFile;
-          _jumpToPageOnLoad = targetPage; // Jump to the page where signature was placed
+          _jumpToPageOnLoad =
+              targetPage; // Jump to the page where signature was placed
         });
 
         if (mounted) {
@@ -141,7 +168,9 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         _shareFile();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('İndirmek için "Dosyalara Kaydet"i kullanın.')),
+            const SnackBar(
+              content: Text('İndirmek için "Dosyalara Kaydet"i kullanın.'),
+            ),
           );
         }
       }
@@ -165,6 +194,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+
       appBar: AppBar(
         backgroundColor: Colors.black,
         iconTheme: IconThemeData(color: Colors.white),
@@ -256,70 +286,16 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                     ),
                   ),
                   Expanded(child: SizedBox()),
-                  Text(
-                    "'PDF Dosyası Seç' butonuna basarak",
-                    style: GoogleFonts.urbanist(
-                      fontSize: 12,
-                      color: const Color.fromARGB(255, 130, 130, 130),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "kabul etmiş olursunuz: ",
-                        style: GoogleFonts.urbanist(
-                          fontSize: 12,
-                          color: const Color.fromARGB(255, 130, 130, 130),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TermsOfServiceScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Hizmet Şartları",
-                          style: GoogleFonts.urbanist(
-                            fontSize: 12,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        " ve ",
-                        style: GoogleFonts.urbanist(
-                          fontSize: 12,
-                          color: const Color.fromARGB(255, 130, 130, 130),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PrivacyPolicyScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Gizlilik Politikası",
-                          style: GoogleFonts.urbanist(
-                            fontSize: 12,
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  Security1(),
+                  Security2(),
+                  SizedBox(height: 8),
+                  _bannerAd != null
+                      ? Container(
+                          width: _bannerAd!.size.width.toDouble(),
+                          height: _bannerAd!.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd!),
+                        )
+                      : SizedBox.shrink(),
                 ],
               ),
             )
@@ -334,6 +310,91 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                 }
               },
             ),
+    );
+  }
+}
+
+class Security2 extends StatelessWidget {
+  const Security2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          " ve ",
+          style: GoogleFonts.urbanist(
+            fontSize: 12,
+            color: const Color.fromARGB(255, 130, 130, 130),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PrivacyPolicyScreen(),
+              ),
+            );
+          },
+          child: Text(
+            "Gizlilik Politikasını",
+            style: GoogleFonts.urbanist(
+              fontSize: 12,
+              color: Colors.white,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.white,
+            ),
+          ),
+        ),
+        Text(
+          " kabul etmiş olursunuz: ",
+          style: GoogleFonts.urbanist(
+            fontSize: 12,
+            color: const Color.fromARGB(255, 130, 130, 130),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Security1 extends StatelessWidget {
+  const Security1({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "'PDF Dosyası Seç' butonuna basarak",
+          style: GoogleFonts.urbanist(
+            fontSize: 12,
+            color: const Color.fromARGB(255, 130, 130, 130),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TermsOfServiceScreen(),
+              ),
+            );
+          },
+          child: Text(
+            "Hizmet Şartları",
+            style: GoogleFonts.urbanist(
+              fontSize: 12,
+              color: Colors.white,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

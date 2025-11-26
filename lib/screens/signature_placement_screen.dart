@@ -181,6 +181,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+
       appBar: AppBar(
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -191,10 +192,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
         centerTitle: true,
         actions: [
           if (_signaturePosition != null)
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: _onSave,
-            ),
+            IconButton(icon: const Icon(Icons.check), onPressed: _onSave),
         ],
       ),
       body: Stack(
@@ -214,10 +212,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
               _pdfViewerController.jumpToPage(widget.initialPage);
             },
           ),
-          if (_isLoadingSizes)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
+          if (_isLoadingSizes) const Center(child: CircularProgressIndicator()),
           if (_signaturePosition == null && !_isLoadingSizes)
             Positioned(
               top: 20,
@@ -274,7 +269,9 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                         onTap: _deleteSignature,
                         child: Container(
                           color: Colors.transparent, // Hit test target
-                          padding: const EdgeInsets.all(8), // Larger touch target
+                          padding: const EdgeInsets.all(
+                            8,
+                          ), // Larger touch target
                           child: Container(
                             decoration: const BoxDecoration(
                               color: Colors.red,
@@ -299,21 +296,24 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                           setState(() {
                             // Use the larger of dx or dy to resize, allowing diagonal drag
                             double delta = details.delta.dx;
-                            if (details.delta.dy.abs() > details.delta.dx.abs()) {
-                               delta = details.delta.dy;
+                            if (details.delta.dy.abs() >
+                                details.delta.dx.abs()) {
+                              delta = details.delta.dy;
                             }
-                            
+
                             double newWidth = _signatureWidth + delta;
                             if (newWidth < 50) newWidth = 50;
                             if (newWidth > 300) newWidth = 300;
-                            
+
                             _signatureWidth = newWidth;
                             _signatureHeight = _signatureWidth / _aspectRatio;
                           });
                         },
                         child: Container(
                           color: Colors.transparent, // Hit test target
-                          padding: const EdgeInsets.all(8), // Larger touch target
+                          padding: const EdgeInsets.all(
+                            8,
+                          ), // Larger touch target
                           child: Container(
                             decoration: const BoxDecoration(
                               color: Colors.blue,
