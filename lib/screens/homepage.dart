@@ -7,9 +7,13 @@ import '../services/file_picker_service.dart';
 import 'pdf_editor_screen.dart'; // Yeni oluşturacağımız sayfa
 import 'terms_of_service_screen.dart';
 import 'privacy_policy_screen.dart';
+import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
+import '../constants/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final LocaleProvider? localeProvider;
+  const HomeScreen({Key? key, this.localeProvider}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -64,9 +68,55 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0, top: 8.0),
+                child: PopupMenuButton<Locale>(
+                  color: Colors.black,
+                  icon: const Icon(
+                    Icons.language,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  onSelected: (Locale locale) {
+                    widget.localeProvider?.setLocale(locale);
+                  },
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<Locale>>[
+                        PopupMenuItem<Locale>(
+                          value: Locale('en'),
+                          child: Row(
+                            children: [
+                              Text('🇬🇧', style: TextStyle(fontSize: 20)),
+                              SizedBox(width: 8),
+                              Text(
+                                'English',
+                                style: GoogleFonts.poppins(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<Locale>(
+                          value: Locale('tr'),
+                          child: Row(
+                            children: [
+                              Text('🇹🇷', style: TextStyle(fontSize: 20)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Türkçe',
+                                style: GoogleFonts.poppins(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                ),
+              ),
+            ),
             Image.asset("assets/galaxy.gif"),
             Text(
-              'Sign Flow',
+              AppLocalizations.of(context)!.appTitle,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
@@ -74,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              'Belgelerinizi kolayca imzalayın',
+              AppLocalizations.of(context)!.subtitle,
               style: GoogleFonts.poppins(
                 color: const Color.fromARGB(255, 130, 130, 130),
                 fontWeight: FontWeight.w300,
@@ -88,16 +138,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: width * 0.94,
                 height: width * 0.14,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 13, 20, 100),
+                  color: AppColors.primaryBlue,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(
-                        255,
-                        13,
-                        20,
-                        100,
-                      ).withOpacity(0.4),
+                      color: AppColors.primaryBlue.withOpacity(0.4),
                       blurRadius: 12,
                       spreadRadius: 1,
                       offset: const Offset(0, 4),
@@ -106,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'PDF Dosyası Seç',
+                  AppLocalizations.of(context)!.selectPdf,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontWeight: FontWeight.w400,
@@ -142,7 +187,7 @@ class Security2 extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          " ve ",
+          AppLocalizations.of(context)!.and,
           style: GoogleFonts.urbanist(
             fontSize: 12,
             color: const Color.fromARGB(255, 130, 130, 130),
@@ -156,7 +201,7 @@ class Security2 extends StatelessWidget {
             ),
           ),
           child: Text(
-            "Gizlilik Politikasını",
+            AppLocalizations.of(context)!.privacyPolicy,
             style: GoogleFonts.urbanist(
               fontSize: 12,
               color: Colors.white,
@@ -166,7 +211,7 @@ class Security2 extends StatelessWidget {
           ),
         ),
         Text(
-          " kabul etmiş olursunuz: ",
+          AppLocalizations.of(context)!.agreeTo,
           style: GoogleFonts.urbanist(
             fontSize: 12,
             color: const Color.fromARGB(255, 130, 130, 130),
@@ -185,7 +230,7 @@ class Security1 extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "'PDF Dosyası Seç' butonuna basarak",
+          AppLocalizations.of(context)!.byClicking,
           style: GoogleFonts.urbanist(
             fontSize: 12,
             color: const Color.fromARGB(255, 130, 130, 130),
@@ -199,7 +244,7 @@ class Security1 extends StatelessWidget {
             ),
           ),
           child: Text(
-            "Hizmet Şartları",
+            AppLocalizations.of(context)!.termsOfService,
             style: GoogleFonts.urbanist(
               fontSize: 12,
               color: Colors.white,

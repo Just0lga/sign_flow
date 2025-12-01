@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import '../l10n/app_localizations.dart';
+import '../constants/app_colors.dart';
 
 class SignaturePadWidget extends StatefulWidget {
   const SignaturePadWidget({Key? key}) : super(key: key);
@@ -46,7 +48,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
       child: Column(
         children: [
           Text(
-            'Aşağıyı İmzalayın',
+            AppLocalizations.of(context)!.signBelow,
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -83,12 +85,12 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 13, 20, 100),
+                        color: AppColors.primaryBlue,
                       ),
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Temizle',
+                      AppLocalizations.of(context)!.clear,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
@@ -104,16 +106,11 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                   child: Container(
                     height: width * 0.12,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 13, 20, 100),
+                      color: AppColors.primaryBlue,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(
-                            255,
-                            13,
-                            20,
-                            100,
-                          ).withOpacity(0.4),
+                          color: AppColors.primaryBlue.withOpacity(0.4),
                           blurRadius: 12,
                           spreadRadius: 1,
                           offset: const Offset(0, 4),
@@ -122,7 +119,7 @@ class _SignaturePadWidgetState extends State<SignaturePadWidget> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'İmzayı Kaydet',
+                      AppLocalizations.of(context)!.saveSignature,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,

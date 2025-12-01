@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../l10n/app_localizations.dart';
 
 class TermsOfServiceScreen extends StatelessWidget {
   const TermsOfServiceScreen({Key? key}) : super(key: key);
@@ -14,23 +14,68 @@ class TermsOfServiceScreen extends StatelessWidget {
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-          'Hizmet Şartları',
+          AppLocalizations.of(context)!.termsOfService,
           style: GoogleFonts.poppins(color: Colors.white),
         ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          'Buraya Hizmet Şartları metni gelecek.\n\n'
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-          'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. '
-          'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris '
-          'nisi ut aliquip ex ea commodo consequat.',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 14,
-          ),
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 10),
+            Icon(
+              Icons.description_outlined,
+              size: 80,
+              color: Colors.white.withOpacity(0.9),
+            ),
+            const SizedBox(height: 30),
+            Container(
+              padding: const EdgeInsets.all(24.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.termsOfServiceTitleText,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Divider(color: Colors.white.withOpacity(0.1)),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.of(context)!.termsOfServiceText,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 15,
+                      height: 1.6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );

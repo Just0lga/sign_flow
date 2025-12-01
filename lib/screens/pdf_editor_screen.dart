@@ -8,6 +8,7 @@ import 'package:sign_flow/ad_helper.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../widgets/signature_pad_widget.dart';
 import 'signature_placement_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class PdfEditorScreen extends StatefulWidget {
   final File file;
@@ -85,7 +86,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('İmza başarıyla eklendi!')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.signatureAddedSuccess)),
           );
         }
       }
@@ -95,7 +96,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen> {
   void _shareFile() async {
     await Share.shareXFiles([
       XFile(_currentFile.path),
-    ], text: 'İşte imzalı belgem.');
+    ], text: AppLocalizations.of(context)!.signedDocumentShareText);
   }
 
   Future<void> _downloadFile() async {
@@ -123,13 +124,13 @@ class _PdfEditorScreenState extends State<PdfEditorScreen> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('İndirilenlere kaydedildi: $fileName')),
+              SnackBar(content: Text(AppLocalizations.of(context)!.savedToDownloads + fileName)),
             );
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Depolama izni reddedildi.')),
+              SnackBar(content: Text(AppLocalizations.of(context)!.storagePermissionDenied)),
             );
           }
         }
@@ -140,7 +141,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen> {
       if (mounted)
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('İndirme hatası: $e')));
+        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.downloadError + '$e')));
     }
   }
 
@@ -159,17 +160,17 @@ class _PdfEditorScreenState extends State<PdfEditorScreen> {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: _shareFile,
-            tooltip: 'Paylaş',
+            tooltip: AppLocalizations.of(context)!.share,
           ),
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: _downloadFile,
-            tooltip: 'İndir',
+            tooltip: AppLocalizations.of(context)!.download,
           ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: _openSignaturePad,
-            tooltip: 'İmza Ekle',
+            tooltip: AppLocalizations.of(context)!.addSignature,
           ),
         ],
       ),

@@ -6,6 +6,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sign_flow/ad_helper.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../services/pdf_service.dart';
+import '../l10n/app_localizations.dart';
 
 class SignaturePlacementScreen extends StatefulWidget {
   final File pdfFile;
@@ -190,7 +191,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
         });
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('İmza ekleme hatası: $e')));
+        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.errorAddingSignature + '$e')));
       }
     }
   }
@@ -211,7 +212,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-          'İmzayı Yerleştir',
+          AppLocalizations.of(context)!.placeSignature,
           style: GoogleFonts.poppins(color: Colors.white),
         ),
         centerTitle: true,
@@ -250,7 +251,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'İmzanızı yerleştirmek için PDF üzerinde herhangi bir yere dokunun',
+                  AppLocalizations.of(context)!.tapToPlaceSignature,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w400,
