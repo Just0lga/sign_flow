@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'homepage.dart';
+
 class SplashScreen extends StatefulWidget {
   final dynamic localeProvider; // dışarıdan alıyorsan ekle
 
@@ -21,19 +23,30 @@ class _SplashScreenState extends State<SplashScreen>
     // Fade animasyonu
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
     );
 
-    _opacity = Tween<double>(begin: 0, end: 1).animate(_controller);
+    _opacity = Tween<double>(begin: 0, end: 2).animate(_controller);
 
     _controller.forward();
 
     // 3 saniye sonra yönlendirme
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => HomeScreen(localeProvider: widget.localeProvider),
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              HomeScreen(localeProvider: widget.localeProvider),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // scale animasyonu
+            return ScaleTransition(
+              scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOut),
+              ),
+              child: child,
+            );
+          },
         ),
       );
     });
@@ -56,16 +69,5 @@ class _SplashScreenState extends State<SplashScreen>
         ),
       ),
     );
-  }
-}
-
-// Örnek hedef sayfa (senin kodunda zaten var)
-class HomeScreen extends StatelessWidget {
-  final dynamic localeProvider;
-  const HomeScreen({super.key, required this.localeProvider});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("Home Screen")));
   }
 }

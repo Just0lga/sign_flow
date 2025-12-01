@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:sign_flow/screens/splash_screen.dart';
 import 'screens/homepage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'l10n/app_localizations.dart';
@@ -41,7 +42,7 @@ class _MyAppState extends State<MyApp> {
             useMaterial3: true,
           ),
           debugShowCheckedModeBanner: false,
-          home: HomeScreen(localeProvider: _localeProvider),
+          home: SplashScreen(),
         );
       },
     );
