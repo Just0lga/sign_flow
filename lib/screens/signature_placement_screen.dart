@@ -36,6 +36,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
   double _signatureWidth = 100.0;
   double _signatureHeight = 50.0; // Initial aspect ratio will be set on load
   double _aspectRatio = 2.0;
+  double _initialSignatureWidth = 100.0;
 
   List<Size>? _allPageSizes;
   GlobalKey _pdfViewerKey = GlobalKey();
@@ -189,9 +190,13 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
         setState(() {
           _isSaving = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.errorAddingSignature + '$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorAddingSignature + '$e',
+            ),
+          ),
+        );
       }
     }
   }
@@ -265,12 +270,26 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
               left: _signaturePosition!.dx - (_signatureWidth / 2),
               top: _signaturePosition!.dy - (_signatureHeight / 2),
               child: GestureDetector(
-                onPanUpdate: (details) {
+                onScaleStart: (details) {
+                  _initialSignatureWidth = _signatureWidth;
+                },
+                onScaleUpdate: (details) {
                   setState(() {
+                    // Update position
                     _signaturePosition = Offset(
-                      _signaturePosition!.dx + details.delta.dx,
-                      _signaturePosition!.dy + details.delta.dy,
+                      _signaturePosition!.dx + details.focalPointDelta.dx,
+                      _signaturePosition!.dy + details.focalPointDelta.dy,
                     );
+
+                    // Update size
+                    double newWidth = _initialSignatureWidth * details.scale;
+                    double maxWidth = MediaQuery.of(context).size.width;
+
+                    if (newWidth < 50) newWidth = 50;
+                    if (newWidth > maxWidth) newWidth = maxWidth;
+
+                    _signatureWidth = newWidth;
+                    _signatureHeight = _signatureWidth / _aspectRatio;
                   });
                 },
                 child: Stack(
@@ -306,48 +325,6 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                             padding: const EdgeInsets.all(4),
                             child: const Icon(
                               Icons.close,
-                              size: 20, // Slightly larger icon
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Resize Handle
-                    Positioned(
-                      bottom: -20, // Increased hit area
-                      right: -20, // Increased hit area
-                      child: GestureDetector(
-                        onPanUpdate: (details) {
-                          setState(() {
-                            // Use the larger of dx or dy to resize, allowing diagonal drag
-                            double delta = details.delta.dx;
-                            if (details.delta.dy.abs() >
-                                details.delta.dx.abs()) {
-                              delta = details.delta.dy;
-                            }
-
-                            double newWidth = _signatureWidth + delta;
-                            if (newWidth < 50) newWidth = 50;
-                            if (newWidth > 300) newWidth = 300;
-
-                            _signatureWidth = newWidth;
-                            _signatureHeight = _signatureWidth / _aspectRatio;
-                          });
-                        },
-                        child: Container(
-                          color: Colors.transparent, // Hit test target
-                          padding: const EdgeInsets.all(
-                            8,
-                          ), // Larger touch target
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(4),
-                            child: const Icon(
-                              Icons.crop_free,
                               size: 20, // Slightly larger icon
                               color: Colors.white,
                             ),
