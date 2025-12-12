@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_flow/file_picker_service.dart';
 import 'package:sign_flow/pdf_editor_screen.dart';
 import 'package:sign_flow/app_colors.dart';
@@ -67,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.center,
                   child: Text(
                     'Dosya Seç',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.backgroundLight,
@@ -105,8 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-
-              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -122,9 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Image.asset("assets/logo_no_background.png", height: 32),
             SizedBox(width: 8),
-            const Text(
+            Text(
               'SignFlow',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryDark,
@@ -134,19 +133,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         const SizedBox(height: 28),
-        const Text(
+        Text(
           'Belgelerinizi\nDijital Olarak İmzalayın',
-          style: TextStyle(
-            fontSize: 32,
+          style: GoogleFonts.poppins(
+            fontSize: 34,
             height: 1.1,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             color: AppColors.textDark,
           ),
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'PDF dosyalarınızı saniyeler içinde yükleyin, düzenleyin ve imzalayın.',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 16,
             color: AppColors.textGrey,
             height: 1.5,
